@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app  # 将当前目录挂载到容器的/app
+    environment:
+      - START_XVFB=false  # 确保Xvfb不会启动，因为我们使用无头模式
+    depends_on:
+      - chrome
+    networks:
+      - selenium-network
+
+  chrome:
+    image: selenium/standalone-chrome:latest
+    volumes:
+      - /dev/shm:/dev/shm  # 对于高性能（避免内存溢出）
+    environment:
+      - START_XVFB=false  # 确保Xvfb不会启动，因为我们使用无头模式
+    ports:
+      - "5900:5900"  # 如果您想启用VNC
+    networks:
+      - selenium-network
+
+networks:
+  selenium-network:
+    driver: bridge
